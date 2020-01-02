@@ -4,7 +4,7 @@ import { Note } from '../models/note';
 export class NoteRepository {
 
     private GET_ALL = 'SELECT * FROM note;';
-    private GET_BY_USER_ID = 'SELECT * FROM note where user_id = ?';
+    private GET_BY_USER_ID = 'SELECT * FROM note WHERE user_id = ?';
     private POST_BY_ID = 'INSERT INTO note SET ?';
     private PUT_BY_ID = 'UPDATE note SET ? WHERE id = ?';
     private DEL_BY_ID = 'DELETE FROM note WHERE id = ?';
@@ -13,7 +13,6 @@ export class NoteRepository {
 
     constructor() {
         this.db =  DbHandler.getInstance();
-
     }
 
     async findAll() {

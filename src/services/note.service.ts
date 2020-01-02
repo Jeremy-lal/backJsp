@@ -14,7 +14,7 @@ export class NoteService {
         return all;
     }
 
-    async getById(id: number) {
+    async findByUserId(id: number) {
         if (!Number.isInteger(id)) {
             throw new Error('error');
         }

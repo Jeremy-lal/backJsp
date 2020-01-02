@@ -21,7 +21,7 @@ export const NoteController = (app: Application) => {
         const id = parseInt(req.params.id, 10);
 
         try {
-            const result = await noteService.getById(id);
+            const result = await noteService.findByUserId(id);
             res.send(result);
         } catch (error) {
             res.status(404).send('L\'id n\'a pas été trouvé' + id);
