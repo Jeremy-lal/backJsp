@@ -1,11 +1,6 @@
 import { CommentService } from './../services/comment.service';
 import express, { Router, Request, Response, Application } from 'express';
 
-/**
- * Le controller vous servira à réceptionner les requêtes associées aux utilisateurs
- *
- * @param app l'application express
- */
 export const CommentController = (app: Application) => {
 
     const commentRouter: Router = express.Router();

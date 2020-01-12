@@ -26,6 +26,10 @@ export class UserService {
         return await this.repository.findByStatus(status);
     }
 
+    async getByEmail(email: string) {
+        return await this.repository.findByEmail(email);
+    }
+
     async upload(user: User) {
         return this.repository.save(user);
     }

@@ -11,8 +11,6 @@ export default async ( app: Application) => {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
 
-  // ...More middlewares
 
-  // Return the express app
   return app;
 };
