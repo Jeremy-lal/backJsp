@@ -10,21 +10,24 @@ export const AuthController = (app: Application) => {
 
     
     authRouter.post('/signin', async (req: Request, res: Response) => {
-        const user: User = req.body;
+        const userB= req.body;
         try {
-            await authService.signIn(user.email, user.pwd);
-            res.send(user);
+          const { token, user } = await authService.signIn(userB.username, userB.pwd);
+          res.set('access-control-expose-headers', 'JWT_TOKEN');
+          res.set('JWT_TOKEN', token);
+          res.send(user);
         } catch (error) {
-            res.status(404).send('Connexion impossible');
-        }
-    });
+            console.log(error);
+            res.status(400).send('L\'email ou le mot de passe est erroné');
+          }
+      });
 
-    authRouter.post('/signup', async (req: Request, res: Response) => {
+      authRouter.post('/signup', async (req: Request, res: Response) => {
         const user = req.body;
         try {
             await authService.signUp(user);
             res.send('Record Ok');
-
+  
         } catch (error) {
             res.status(409).send('Email déjà existant');
         }

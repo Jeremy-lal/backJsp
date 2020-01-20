@@ -1,11 +1,16 @@
 import { UserService } from './../services/user.service';
 import express, { Router, Request, Response, Application } from 'express';
-
+import jwt = require('express-jwt')
 
 export const UserController = (app: Application) => {
 
     const userRouter: Router = express.Router();
     const userService = new UserService();
+
+    // if (!process.env.WILD_JWT_SECRET) {
+    //     throw new Error('Secret is not defined');
+    // }
+    // userRouter.use(jwt({secret: process.env.WILD_JWT_SECRET}));
 
     
     userRouter.get('/', async (req: Request, res: Response) => {
@@ -24,6 +29,21 @@ export const UserController = (app: Application) => {
         }
     });
 
+    userRouter.get('/username/:username', async (req: Request, res: Response) => {
+        const username = req.params.username;
+        const result = await userService.getByUsername(username);
+        res.send(result);
+    });
+
+
+    userRouter.get('/me', async (req: Request, res: Response) => {
+        const user = await userService.getById((req as any).user.id);
+        if (!user) {
+            res.status(400).send('Aucun utilisateur trouvé pour ce token');
+        }
+        res.send(user);
+    });
+
     userRouter.get('/role/:status', async (req: Request, res: Response) => {
         const status = req.params.status;
 
@@ -31,18 +51,18 @@ export const UserController = (app: Application) => {
             const result = await userService.getByStatus(status);
             res.send(result);
         } catch (error) {
-            res.status(404).send('L\'id n\'a pas été trouvé' + status);
+            res.status(404).send('Le status n\'a pas été trouvé' + status);
         }
     });
 
-    userRouter.get('/auth/:email', async (req: Request, res: Response) => {
-        const email = req.params.email;
+    userRouter.get('/auth/:username', async (req: Request, res: Response) => {
+        const username = req.params.username;
 
         try {
-            const result = await userService.getByEmail(email);
+            const result = await userService.getByUsername(username);
             res.send(result);
         } catch (error) {
-            res.status(404).send('L\'id n\'a pas été trouvé' + email);
+            res.status(404).send( username + 'n\'a pas été trouvé');
         }
     });
 

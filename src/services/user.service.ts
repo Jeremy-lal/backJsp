@@ -18,7 +18,6 @@ export class UserService {
         if (!Number.isInteger(id)) {
             throw new Error('error');
         }
-
         return await this.repository.findById(id);
     }
 
@@ -26,8 +25,8 @@ export class UserService {
         return await this.repository.findByStatus(status);
     }
 
-    async getByEmail(email: string) {
-        return await this.repository.findByEmail(email);
+    async getByUsername(username: string) {
+        return await this.repository.findByUsername(username);
     }
 
     async upload(user: User) {

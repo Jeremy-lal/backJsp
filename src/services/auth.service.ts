@@ -3,9 +3,9 @@ import { UserRepository } from './../repository/user.repository';
 import { TokenService } from './token.service';
 import { User } from 'src/models/user';
 import { Token } from '../models/token';
-import { randomBytes } from 'crypto';
 import { hash, verify } from 'argon2';
 import { sign } from 'jsonwebtoken';
+import { randomBytes } from 'crypto';
 
 export class AuthService {
 
@@ -20,42 +20,51 @@ export class AuthService {
 
      }
 
-    async signUp(user: User) {
-        const userEmail = await this.repository.findByEmail(user.email);
+     async signUp(user: User) {
+      const username = await this.repository.findByUsername(user.username);
 
-        if (userEmail) {
-            throw new Error('Mail already used');
-        } else {
-            user.pwd = await hash(user.pwd);
+      if (username == null || undefined) {
+          user.pwd = await hash(user.pwd);
 
-            const all = await this.repository.save(user);
+          randomBytes(12).toString('hex');
 
-            const tokenString = randomBytes(12).toString('hex');
-            const token = new Token({user_id : all.insertId, value : tokenString});
+          const all = await this.repository.save(user);
 
-            await this.tokenService.create(token);
-        }
-    }
+          const tokenString = randomBytes(12).toString('hex');
+          const token = new Token({user_id : all.insertId, value : tokenString});
 
-    async signIn(email: string, password: string) {
-        const user = await this.repository.findByEmail(email);
-        const error = new Error('Invalid credentials');
+          await this.tokenService.create(token);
+      } else {
+          throw new Error('Mail already used ');
+      }
+  }
+
+
+     async signIn(username: string, password: string) {
+        const labelError = new Error('Invalide crendentials');
+        const user = await this.repository.findByUsername(username); // équivalent {where: {email:email}}
 
         if (!user) {
-            throw error;
+          throw new Error('NOT ACTIVE');
+        }
+  
+        if (!user) {
+          throw labelError;
         }
         const isValid = await verify(user.pwd, password);
         if (!isValid) {
-            throw error;
+          throw labelError;
         }
-        const payload = { id: user.id, email: user.email, firstname: user.firstname, status: user.status, lastname: user.lastname, username: user.username, birthday: user.birthday };
-        if (!process.env.WILD_JWT_SECRET) {
-            throw new Error('Server is not correctly configured');
+  
+        const secret1 = process.env.WILD_JWT_SECRET;
+        if (!secret1) {
+          throw new Error('Pas de secret SETUP');
         }
-        const token = sign (payload, process.env.WILD_JWT_SECRET as string);
-        
-        return token;
-    }
+        const token = sign( 
+            {id: user.id, username: user.username, email: user.email},
+            secret1);
+        return {token, user};
+      }
 }
 
 

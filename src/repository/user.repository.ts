@@ -3,10 +3,11 @@ import { User } from '../models/user';
 
 export class UserRepository {
 
-    private GET_ALL = 'SELECT * FROM user;';
-    private GET_BY_ID = 'SELECT u.*, n.title, n.valeur, n.id AS nodeId FROM note AS n  JOIN user AS u ON n.user_id= u.id WHERE u.id = ?';
+    private GET_ALL = 'SELECT * FROM user';
+    private GET_BY_ID = 'SELECT * FROM user WHERE user.id = ?';
+    // private GET_BY_ID = 'SELECT u.*, n.title, n.valeur, n.id AS nodeId FROM note AS n  JOIN user AS u ON n.user_id= u.id WHERE u.id = ?';
     private GET_BY_STATUS = 'SELECT * from user WHERE status = ?';
-    private GET_BY_EMAIL = 'SELECT * FROM user WHERE email = ?';
+    private GET_BY_USERNAME = 'SELECT * FROM user WHERE username = ?';
     private POST_BY_ID = 'INSERT INTO user SET ?';
     private PUT_BY_ID = 'UPDATE user SET ? WHERE id = ?';
     private DEL_BY_ID = 'DELETE FROM user WHERE id = ?';
@@ -32,9 +33,9 @@ export class UserRepository {
         return user;
     }
 
-    async findByEmail(email: string) {
-        const user = await (this.db.query(this.GET_BY_EMAIL , email) as Promise<User[]>);
-        return user[0]|| null;
+    async findByUsername(username: string) {
+        const users = await (this.db.query(this.GET_BY_USERNAME , username) as Promise<User[]>);
+        return users[0]|| null;
     }
 
     async save(user: User): Promise<any> {
