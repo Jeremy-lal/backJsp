@@ -34,6 +34,17 @@ export const CommentController = (app: Application) => {
         }
     });
 
+    commentRouter.get('/response/grp/:group', async (req: Request, res: Response) => {
+        const group = req.params.group;
+
+        try {
+            const result = await commentService.getResponseByGroup(group);
+            res.send(result);
+        } catch (error) {
+            res.status(404).send('Le groupe' + group + 'n\'a pas été trouvé');
+        }
+    });
+
     commentRouter.post('/', (req: Request, res: Response) => {
         const comment = req.body;
         commentService.upload(comment);

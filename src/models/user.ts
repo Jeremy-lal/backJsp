@@ -1,3 +1,4 @@
+import { Note } from './note';
 export class User {
 
      public id!: number;
@@ -17,6 +18,8 @@ export class User {
         postcode: number;
         city: string;
     };
+
+    public note: Note[] = [];
 
     public imgURL!: string;
 

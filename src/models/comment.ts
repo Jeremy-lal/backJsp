@@ -7,6 +7,7 @@ export class Comment {
   public title!: string;
   public content!: string;
   public grp!: string;
+  public comment_id!: number;
 
   constructor(input: Comment) {
     Object.assign(this, input);

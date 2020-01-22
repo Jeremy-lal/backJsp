@@ -26,6 +26,10 @@ export class CommentService {
         return await this.repository.findByGroup(group);
     }
 
+    async getResponseByGroup(group: string) {
+        return await this.repository.findResponseByGroup(group);
+    }
+
     async upload(comment: Comment) {
         return this.repository.save(comment);
     }

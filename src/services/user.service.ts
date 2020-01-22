@@ -1,16 +1,27 @@
 import { UserRepository } from '../repository/user.repository';
 import { User } from '../models/user';
+import { NoteRepository } from '../repository/note.repository';
 
 export class UserService {
 
     private repository: UserRepository;
+    private repositoryNote: NoteRepository;
 
     constructor() {
         this.repository = new UserRepository();
+        this.repositoryNote = new NoteRepository();
     }
 
     async getAll() {
-        const all = await this.repository.findAll();
+        const all: User[] = await this.repository.findAll();
+        try {
+            for (let i = 0; i < all.length; i++) {
+                all[i].note = (await this.repositoryNote.findByUserId(all[i].id));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
         return all;
     }
 
@@ -22,7 +33,15 @@ export class UserService {
     }
 
     async getByStatus(status: string) {
-        return await this.repository.findByStatus(status);
+        const all = await this.repository.findByStatus(status);
+        try {
+            for (let i = 0; i < all.length; i++) {
+                all[i].note = (await this.repositoryNote.findByUserId(all[i].id));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        return all;
     }
 
     async getByUsername(username: string) {

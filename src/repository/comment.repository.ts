@@ -5,7 +5,8 @@ export class CommentRepository {
 
     private GET_ALL = 'SELECT * FROM comment;';
     private GET_BY_ID = 'SELECT * FROM comment where id = ?';
-    private GET_BY_GROUP = 'SELECT c.*, u.id AS userID, u.firstname, u.lastname, u.status, u.imgURL, u.status FROM comment AS c  JOIN user AS u ON c.user_id= u.id WHERE grp = ? ORDER BY c.createAt DESC;';
+    private GET_BY_GROUP = 'SELECT c.*, u.id AS userID, u.firstname, u.lastname, u.status, u.imgURL, u.status FROM comment AS c  JOIN user AS u ON c.user_id= u.id WHERE grp = ? and comment_id  IS NULL ORDER BY c.createAt DESC;';
+    private GET_RESPONSE_BY_GROUP = 'SELECT c.*, u.id AS userID, u.firstname, u.lastname, u.status, u.imgURL, u.status FROM comment AS c  JOIN user AS u ON c.user_id= u.id WHERE grp = ? and comment_id IS NOT NULL;';
     private POST_BY_ID = 'INSERT INTO comment SET ?';
     private PUT_BY_ID = 'UPDATE comment SET ? WHERE id = ?';
     private DEL_BY_ID = 'DELETE FROM comment WHERE id = ?';
@@ -28,6 +29,11 @@ export class CommentRepository {
     }
     async findByGroup(grp: string) {
         const comments = await this.db.query(this.GET_BY_GROUP , grp);
+        return comments;
+    }
+
+    async findResponseByGroup(grp: string) {
+        const comments = await this.db.query(this.GET_RESPONSE_BY_GROUP , grp);
         return comments;
     }
 

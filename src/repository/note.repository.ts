@@ -21,7 +21,7 @@ export class NoteRepository {
     }
 
     async findByUserId(id: number) {
-        const note = await this.db.query(this.GET_BY_USER_ID , id);
+        const note = await this.db.query(this.GET_BY_USER_ID , id) as Promise<never>;
         return note;
     }
 
