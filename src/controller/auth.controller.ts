@@ -29,6 +29,7 @@ export const AuthController = (app: Application) => {
             res.send('Record Ok');
   
         } catch (error) {
+            console.error(error)
             res.status(409).send('Email déjà existant');
         }
     });

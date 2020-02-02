@@ -1,6 +1,9 @@
 import { UserService } from './../services/user.service';
 import express, { Router, Request, Response, Application } from 'express';
 import jwt = require('express-jwt')
+const multer = require('multer');
+const upload = multer({ dest: 'tmp/' });
+const fs = require('fs');
 
 export const UserController = (app: Application) => {
 
@@ -66,8 +69,9 @@ export const UserController = (app: Application) => {
         }
     });
 
-    userRouter.post('/', (req: Request, res: Response) => {
+    userRouter.post('/', upload.single('imgUrl'), (req: Request, res: Response) => {
         const user = req.body;
+        
         userService.upload(user);
         res.send(user);
     });

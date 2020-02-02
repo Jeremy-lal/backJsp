@@ -1,10 +1,10 @@
 import { Note } from './note';
 export class User {
 
-     public id!: number;
-     public firstname!: string;
-     public lastname!: string;
-     public birthday!: Date;
+    public id!: number;
+    public firstname!: string;
+    public lastname!: string;
+    public birthday!: Date;
 
     public username!: string;
     public pwd!: string;
@@ -13,11 +13,7 @@ export class User {
     public email!: string;
     public status!: string;
 
-    public adress!: {
-        street: string;
-        postcode: number;
-        city: string;
-    };
+    public adress!: string;
 
     public note: Note[] = [];
 

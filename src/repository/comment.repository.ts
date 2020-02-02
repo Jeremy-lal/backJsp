@@ -5,7 +5,7 @@ export class CommentRepository {
 
     private GET_ALL = 'SELECT * FROM comment;';
     private GET_BY_ID = 'SELECT * FROM comment where id = ?';
-    private GET_BY_GROUP = 'SELECT c.*, u.id AS userID, u.firstname, u.lastname, u.status, u.imgURL, u.status FROM comment AS c  JOIN user AS u ON c.user_id= u.id WHERE grp = ? and comment_id  IS NULL ORDER BY c.createAt DESC;';
+    private GET_BY_GROUP = 'SELECT c.*, u.id AS userID, u.firstname, u.lastname, u.status, u.imgURL, u.status FROM comment AS c  JOIN user AS u ON c.user_id= u.id WHERE grp = ? and comment_id  IS NULL ORDER BY c.create_at DESC;';
     private GET_RESPONSE_BY_GROUP = 'SELECT c.*, u.id AS userID, u.firstname, u.lastname, u.status, u.imgURL, u.status FROM comment AS c  JOIN user AS u ON c.user_id= u.id WHERE grp = ? and comment_id IS NOT NULL;';
     private POST_BY_ID = 'INSERT INTO comment SET ?';
     private PUT_BY_ID = 'UPDATE comment SET ? WHERE id = ?';
@@ -38,8 +38,9 @@ export class CommentRepository {
     }
 
     async save(comment: Comment) {
-        const postComment = await this.db.query(this.POST_BY_ID, comment);
-        return postComment;
+        const postComment: any = await this.db.query(this.POST_BY_ID, comment);
+        comment.id = postComment.insertId;
+        return comment;
     }
 
     async modify(comment: Comment, id: number) {
