@@ -30,6 +30,8 @@ export const CommentController = (app: Application) => {
             const result = await commentService.getByGroup(group);
             res.send(result);
         } catch (error) {
+            console.log(error);
+            
             res.status(404).send('Le groupe' + group + 'n\'a pas été trouvé');
         }
     });
