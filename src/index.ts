@@ -9,6 +9,7 @@ import { AuthController } from './controller/auth.controller';
 
 import express from 'express';
 import loaders from './loaders';
+import { PictureController } from './controller/picture.controller';
 
 
 async function startServer() {
@@ -23,6 +24,7 @@ async function startServer() {
   CommentController(app);
   NoteController(app);
   AuthController(app);
+  PictureController(app)
 
 
   // Démarrage du serveur une fois que tout est correctement init
