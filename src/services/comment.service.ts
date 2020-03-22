@@ -19,11 +19,19 @@ export class CommentService {
             throw new Error('error');
         }
 
-        return await this.repository.findById(id);
+        return (await this.repository.findById(id))[0];
     }
 
     async getByGroup(group: string) {
         return await this.repository.findByGroup(group);
+    }
+
+    async getNumberResponse(messageId: number) {
+        return (await this.repository.getNumberResponse(messageId))[0];
+    }
+
+    async getResponseByCommentID(messageId: number) {
+        return (await this.repository.getResponseByCommentID(messageId));
     }
 
     async getResponseByGroup(group: string) {

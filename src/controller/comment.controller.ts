@@ -16,7 +16,7 @@ export const CommentController = (app: Application) => {
         const id = parseInt(req.params.id, 10);
 
         try {
-            const result = await commentService.getById(id);
+            const result = (await commentService.getById(id));
             res.send(result);
         } catch (error) {
             res.status(404).send('L\'id n\'a pas été trouvé' + id);
@@ -47,10 +47,40 @@ export const CommentController = (app: Application) => {
         }
     });
 
+    commentRouter.get('/response/:messageId', async (req: Request, res: Response) => {
+        const messageId = parseInt(req.params.messageId, 10);
+
+        try {
+            const result = await commentService.getResponseByCommentID(messageId);
+            res.send(result);
+        } catch (error) {
+            console.log(error);
+            
+            res.sendStatus(404).send('erreur nb response');
+        }
+    });
+
+    commentRouter.get('/response/number/:messageId', async (req: Request, res: Response) => {
+        const messageId = parseInt(req.params.messageId, 10);
+
+        try {
+            const result = await commentService.getNumberResponse(messageId);
+            res.send(result);
+        } catch (error) {
+            console.log(error);
+            
+            res.sendStatus(404).send('erreur nb response');
+        }
+    });
+
     commentRouter.post('/', (req: Request, res: Response) => {
         const comment = req.body;
-        commentService.upload(comment);
-        res.send(comment);
+        try {
+            commentService.upload(comment);
+            res.send(comment);
+        } catch (error) {
+            console.log(error);
+        }
     });
 
     commentRouter.put('/:id', (req: Request, res: Response) => {

@@ -17,7 +17,12 @@ async function startServer() {
   const app = express();
 
   await loaders(app);
+  // app.use('/src/images', express.static('images'));
+  app.use(express.static('/images' +'/public'));
 
+  app.get('/', function (req, res) {
+    res.sendFile('/images' + '/index.html');
+  })
   // Ajout des différentes route de votre application
   
   UserController(app);
