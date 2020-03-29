@@ -71,6 +71,7 @@ export class AuthService {
     const token = sign(
       { id: user.id, username: user.username, email: user.email },
       secret1);
+      
     return { token, user };
   }
 }

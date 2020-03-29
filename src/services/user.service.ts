@@ -29,7 +29,13 @@ export class UserService {
         if (!Number.isInteger(id)) {
             throw new Error('error');
         }
-        return await this.repository.findById(id);
+        const user = await this.repository.findById(id);
+        try {
+            user.note = (await this.repositoryNote.findByUserId(id));
+        } catch (error) {
+            console.log(error);
+        }
+        return await user;
     }
 
     async getByStatus(status: string) {

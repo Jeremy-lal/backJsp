@@ -4,8 +4,7 @@ import { User } from '../models/user';
 export class UserRepository {
 
     private GET_ALL = 'SELECT * FROM user';
-    // private GET_BY_ID = 'SELECT * FROM user WHERE user.id = ?';
-    private GET_BY_ID = 'SELECT u.*, n.title, n.valeur, n.id AS nodeId FROM note AS n  JOIN user AS u ON n.user_id= u.id WHERE u.id = ?';
+    private GET_BY_ID = 'SELECT * FROM user WHERE user.id = ?';
     private GET_BY_STATUS = 'SELECT * from user WHERE status = ?';
     private GET_BY_USERNAME = 'SELECT * FROM user WHERE username = ?';
     private POST_BY_ID = 'INSERT INTO user SET ?';
@@ -25,8 +24,8 @@ export class UserRepository {
     }
 
     async findById(id: number) {
-        const user = await this.db.query(this.GET_BY_ID , id);
-        return user;
+        const user = await (this.db.query(this.GET_BY_ID , id) as Promise<User[]>);
+        return user[0]|| null;
     }
     async findByStatus(status: string) {
         const user = await this.db.query(this.GET_BY_STATUS , status) as Promise<User[]>;

@@ -7,12 +7,6 @@ export const UserController = (app: Application) => {
     const userRouter: Router = express.Router();
     const userService = new UserService();
 
-    // if (!process.env.WILD_JWT_SECRET) {
-    //     throw new Error('Secret is not defined');
-    // }
-    // userRouter.use(jwt({secret: process.env.WILD_JWT_SECRET}));
-
-    
     userRouter.get('/', async (req: Request, res: Response) => {
         const result = await userService.getAll();
         res.send(result);
@@ -35,9 +29,15 @@ export const UserController = (app: Application) => {
         res.send(result);
     });
 
+    if (!process.env.WILD_JWT_SECRET) {
+        throw new Error('Secret is not defined');
+      }
 
-    userRouter.get('/me', async (req: Request, res: Response) => {
+    userRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET }));
+
+    userRouter.get('/user/me', async (req: Request, res: Response) => {
         const user = await userService.getById((req as any).user.id);
+        
         if (!user) {
             res.status(400).send('Aucun utilisateur trouvé pour ce token');
         }

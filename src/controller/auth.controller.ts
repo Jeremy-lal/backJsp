@@ -11,11 +11,13 @@ export const AuthController = (app: Application) => {
     
     authRouter.post('/signin', async (req: Request, res: Response) => {
         const userB= req.body;
+       
         try {
-          const { token, user } = await authService.signIn(userB.username, userB.pwd);
-          res.set('access-control-expose-headers', 'JWT_TOKEN');
-          res.set('JWT_TOKEN', token);
-          res.send(user);
+            const {token, user} = await authService.signIn(userB.username, userB.pwd);
+            res.set('access-control-expose-headers', 'JWT-TOKEN');
+            res.set('JWT-TOKEN', token);
+            user.pwd = 'null';
+            res.send(user);
         } catch (error) {
             console.log(error);
             res.status(400).send('L\'email ou le mot de passe est erroné');
