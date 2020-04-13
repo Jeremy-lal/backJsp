@@ -12,6 +12,15 @@ export const UserController = (app: Application) => {
         res.send(result);
     });
 
+    userRouter.get('/groups', async (req: Request, res: Response) => {
+        try {
+            const result = await userService.getAllByGroups();
+        res.send(result);
+        } catch (error) {
+            console.log(error); 
+        }   
+    });
+
     userRouter.get('/:id', async (req: Request, res: Response) => {
         const id = parseInt(req.params.id, 10);
 
@@ -29,20 +38,6 @@ export const UserController = (app: Application) => {
         res.send(result);
     });
 
-    if (!process.env.WILD_JWT_SECRET) {
-        throw new Error('Secret is not defined');
-      }
-
-    userRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET }));
-
-    userRouter.get('/user/me', async (req: Request, res: Response) => {
-        const user = await userService.getById((req as any).user.id);
-        
-        if (!user) {
-            res.status(400).send('Aucun utilisateur trouvé pour ce token');
-        }
-        res.send(user);
-    });
 
     userRouter.get('/role/:status', async (req: Request, res: Response) => {
         const status = req.params.status;
@@ -79,10 +74,32 @@ export const UserController = (app: Application) => {
         res.send(user);
     });
 
+    userRouter.put('/picture/:id', (req: Request, res: Response) => {
+        const id = parseInt(req.params.id, 10);
+        const user = req.body;        
+        userService.modifyUserPicture(user, id);
+        res.send(user);
+    });
+
     userRouter.delete('/:id', (req: Request, res: Response) => {
         const id = parseInt(req.params.id, 10);
         userService.deleteUser(id);
         res.send();
+    });
+
+    if (!process.env.WILD_JWT_SECRET) {
+        throw new Error('Secret is not defined');
+      }
+
+    userRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET }));
+
+    userRouter.get('/user/me', async (req: Request, res: Response) => {
+        const user = await userService.getById((req as any).user.id);
+        
+        if (!user) {
+            res.status(400).send('Aucun utilisateur trouvé pour ce token');
+        }
+        res.send(user);
     });
 
     app.use('/users', userRouter);

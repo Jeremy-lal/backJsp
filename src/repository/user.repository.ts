@@ -3,13 +3,14 @@ import { User } from '../models/user';
 
 export class UserRepository {
 
-    private GET_ALL = 'SELECT * FROM user';
-    private GET_BY_ID = 'SELECT * FROM user WHERE user.id = ?';
-    private GET_BY_STATUS = 'SELECT * from user WHERE status = ?';
-    private GET_BY_USERNAME = 'SELECT * FROM user WHERE username = ?';
-    private POST_BY_ID = 'INSERT INTO user SET ?';
-    private PUT_BY_ID = 'UPDATE user SET ? WHERE id = ?';
-    private DEL_BY_ID = 'DELETE FROM user WHERE id = ?';
+    private GET_ALL = 'SELECT * FROM user;';
+    private GET_BY_ID = 'SELECT * FROM user WHERE user.id = ?;';
+    private GET_BY_STATUS = 'SELECT * from user WHERE status = ?;';
+    private GET_BY_USERNAME = 'SELECT * FROM user WHERE username = ?;';
+    private POST_BY_ID = 'INSERT INTO user SET ?;';
+    private PUT_BY_ID = 'UPDATE user SET ? WHERE id = ?;';
+    private PUT_PICTURE_BY_ID = 'UPDATE user SET imgURL = ? WHERE id = ?;';
+    private DEL_BY_ID = 'DELETE FROM user WHERE id = ?;';
 
     private db: DbHandler;
 
@@ -28,8 +29,8 @@ export class UserRepository {
         return user[0]|| null;
     }
     async findByStatus(status: string) {
-        const user = await this.db.query(this.GET_BY_STATUS , status) as Promise<User[]>;
-        return user;
+        const users = await this.db.query(this.GET_BY_STATUS , status) as Promise<User[]>;
+        return users;
     }
 
     async findByUsername(username: string) {
@@ -44,6 +45,11 @@ export class UserRepository {
 
     async modify(user: User, id: number) {
         const modifyUser = await this.db.query(this.PUT_BY_ID, [user, id]);
+        return modifyUser;
+    }
+
+    async picture(user: User, id: number) {
+        const modifyUser = await this.db.query(this.PUT_PICTURE_BY_ID, [user.imgURL, id]);
         return modifyUser;
     }
 
