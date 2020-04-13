@@ -83,7 +83,7 @@ export class UserService {
     }
 
     async modifyUserPicture(user: User, id: number) {
-        return this.repository.picture(user, id);
+        return this.repository.changePicture(user, id);
     }
 
     async deleteUser(id: number) {

@@ -74,6 +74,25 @@ export class AuthService {
       
     return { token, user };
   }
+
+  async changePwd(userPass: User, pwd: string, newPwd: string) {
+    const user = await this.repository.findByUsername(userPass.username);
+    if (pwd === newPwd) {
+      return 'Mot de passe actuel et nouveau identique';
+    }
+    if (user) {
+      const isValid = await verify(user.pwd, pwd); ///verify if pwd enter is the same in the bdd
+      if (isValid) {
+        user.pwd = await hash(newPwd);
+        this.repository.changePwd(user, user.id);
+        return 'Mot de passe bien changé.';
+      } else {
+        return 'Mot de passe actuel erroné.';
+      }
+    } else {
+      return 'Utilisateur non valide.';
+    }
+  }
 }
 
 
