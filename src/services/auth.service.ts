@@ -1,3 +1,4 @@
+import { environment } from './../environment';
 import { UserService } from './user.service';
 import { UserRepository } from './../repository/user.repository';
 import { NoteRepository } from './../repository/note.repository';
@@ -7,6 +8,7 @@ import { Token } from '../models/token';
 import { hash, verify } from 'argon2';
 import { sign } from 'jsonwebtoken';
 import { randomBytes } from 'crypto';
+import * as nodemailer from 'nodemailer';
 
 export class AuthService {
 
@@ -71,7 +73,7 @@ export class AuthService {
     const token = sign(
       { id: user.id, username: user.username, email: user.email },
       secret1);
-      
+
     return { token, user };
   }
 
@@ -84,7 +86,7 @@ export class AuthService {
       const isValid = await verify(user.pwd, pwd); ///verify if pwd enter is the same in the bdd
       if (isValid) {
         user.pwd = await hash(newPwd);
-        this.repository.changePwd(user, user.id);
+        this.repository.changePwd(user);
         return 'Mot de passe bien changé.';
       } else {
         return 'Mot de passe actuel erroné.';
@@ -93,6 +95,69 @@ export class AuthService {
       return 'Utilisateur non valide.';
     }
   }
+
+  async changeLostPwd(mail: string, identifiant: string) {
+    const userMail = await this.repository.findByEmail(mail);
+    if (!userMail) {
+      return 'L\'email renseigné n\'existe pas';
+    }
+
+    const userIdent = await this.repository.findByUsername(identifiant);
+    if (!userIdent) {
+      return 'L\'utilisateur renseigné n\'existe pas';
+    }
+
+    const newPwd = this.generatePwd();
+    console.log(newPwd);
+
+
+
+    var transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: 'test33700@gmail.com',
+        pass: 'bzEm0LbSHfvfmGi13pUu'
+      }
+    });
+
+    // send mail with defined transport object
+    let info = await transporter.sendMail({
+      from: '"JSP Mérignac" <jsp-merignac@gmail.com>', // sender address
+      to: `${userIdent.email}`, // list of receivers
+      subject: "Réinitialisation mot de passe", // Subject line
+      text: `Vous recevez ce mail suite à la perte de votre mot de passe. Votre nouveau mot de passe est: ${newPwd}`, // plain text body
+      html: `<p> Vous recevez ce mail suite à la perte de votre mot de passe. Votre nouveau mot de passe est: ${newPwd} </p>` // html body
+    });
+
+    // await this.changeUserPwd(userIdent, newPwd);
+
+    return 'pwd change';
+
+  }
+
+  async changeUserPwd(user: User, pwd: string) {
+    user.pwd = await hash(pwd);
+    this.repository.changePwd(user);
+  };
+
+  getRandomInt(min: number, max: number) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  generatePwd() {
+    const characters = 'azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN()/_{}';
+    let newPwd = '';
+    for (let i = 0; i < 16; i++) {
+      const positionCharacter = this.getRandomInt(0, characters.length);
+      newPwd += characters[positionCharacter];
+    }
+    return newPwd;
+  }
+
+
+
 }
 
 

@@ -47,5 +47,19 @@ export const AuthController = (app: Application) => {
         }
     });
 
+    authRouter.put('/reset', async (req: Request, res: Response) => {
+        const email = req.body.email;
+        const username = req.body.username;
+
+        try {
+            const result = await authService.changeLostPwd(email, username);
+            res.send(JSON.stringify(result));
+        } catch (error) {
+            console.log(error);
+            
+            // res.status(409).send(error);
+        }
+    });
+
     app.use('/auth', authRouter);
 };

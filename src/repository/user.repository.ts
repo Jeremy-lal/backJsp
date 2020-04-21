@@ -7,6 +7,7 @@ export class UserRepository {
     private GET_BY_ID = 'SELECT * FROM user WHERE user.id = ?;';
     private GET_BY_STATUS = 'SELECT * from user WHERE status = ?;';
     private GET_BY_USERNAME = 'SELECT * FROM user WHERE username = ?;';
+    private GET_BY_MAIL = 'SELECT * FROM user WHERE email = ?;';
     private POST_BY_ID = 'INSERT INTO user SET ?;';
     private PUT_BY_ID = 'UPDATE user SET ? WHERE id = ?;';
     private PUT_PICTURE_BY_ID = 'UPDATE user SET imgURL = ? WHERE id = ?;';
@@ -39,6 +40,11 @@ export class UserRepository {
         return users[0]|| null;
     }
 
+    async findByEmail(email: string) {
+        const users = await (this.db.query(this.GET_BY_MAIL , email) as Promise<User[]>);
+        return users[0]|| null;
+    }
+
     async save(user: User): Promise<any> {
         const postUser = await (this.db.query(this.POST_BY_ID, user) as Promise<User>);
         return postUser;
@@ -54,8 +60,8 @@ export class UserRepository {
         return modifyUser;
     }
 
-    async changePwd(user: User, id: number) {
-        const modifyUser = await this.db.query(this.PUT_PWD_BY_ID, [user.pwd, id]);
+    async changePwd(user: User) {
+        const modifyUser = await this.db.query(this.PUT_PWD_BY_ID, [user.pwd, user.id]);
         return modifyUser;
     }
 
