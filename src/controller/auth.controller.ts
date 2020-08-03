@@ -1,6 +1,7 @@
 import { User } from 'src/models/user';
 import express, { Router, Request, Response, Application } from 'express';
 import { AuthService } from '../services/auth.service';
+import jwt = require('express-jwt');
 
 
 export const AuthController = (app: Application) => {
@@ -8,30 +9,43 @@ export const AuthController = (app: Application) => {
     const authService = new AuthService();
     const authRouter: Router = express.Router();
 
+    if(process.env.WILD_JWT_SECRET) {
+        authRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET}));
+    } else {
+        throw new Error('Secret is not defined');
+    }
+
 
     authRouter.post('/signin', async (req: Request, res: Response) => {
         const userB = req.body;
 
         try {
-            const { token, user } = await authService.signIn(userB.username, userB.pwd);
-            res.set('access-control-expose-headers', 'JWT-TOKEN');
-            res.set('JWT-TOKEN', token);
-            user.pwd = 'null';
-            res.send(user);
-        } catch (error) {
+            if ((req as any).user.status === 'admin' || (req as any).user.status === 'superAdmin') {
+                const { token, user } = await authService.signIn(userB.username, userB.pwd);
+                res.set('access-control-expose-headers', 'JWT-TOKEN');
+                res.set('JWT-TOKEN', token);
+                user.pwd = 'null';
+                res.send(user);
+            } else {
+              res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
+          } catch (error) {
             console.log(error);
             res.status(400).send('L\'email ou le mot de passe est erroné');
-        }
+          }
     });
 
     authRouter.post('/signup', async (req: Request, res: Response) => {
         const user = req.body;
         try {
-            await authService.signUp(user);
-            res.send('Record Ok');
-
+            if ((req as any).user.status === 'admin' || (req as any).user.status === 'superAdmin') {
+                await authService.signUp(user);
+                res.send('Record Ok');
+            } else {
+              res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
         } catch (error) {
-            res.status(409).send('Email déjà existant');
+            res.status(409).send('Impossible d\'enregistrer cet utilisateur');
         }
     });
 

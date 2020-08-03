@@ -19,16 +19,26 @@ export const PictureController = (app: Application) => {
 
   pictureRouter.post('/', upload.single('picture'), (req: Request, res: Response, next: NextFunction) => {
     const file = req.file;
-    if (!file) {
-      const error = new Error('PLease upload a file');
-      return next(error);
+
+    try {
+        if (!file) {
+          const error = new Error('PLease upload a file');
+          return next(error);
+        }
+        res.send(file)
+      } catch (error) {
+      res.send(error);
     }
-    res.send(file)
   });
 
   pictureRouter.get('/:nameFile', upload.single('picture'), (req: Request, res: Response, next: NextFunction) => {
     const name = req.params.nameFile;
-    res.sendFile(path.resolve(`images/${name}`))
+
+    try {
+        res.sendFile(path.resolve(`images/${name}`))
+      } catch (error) {
+      res.send(error);
+    }
   });
 
   app.use('/picture', pictureRouter);

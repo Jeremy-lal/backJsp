@@ -7,15 +7,34 @@ export const UserController = (app: Application) => {
     const userRouter: Router = express.Router();
     const userService = new UserService();
 
+    if(process.env.WILD_JWT_SECRET) {
+        userRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET}));
+    } else {
+        throw new Error('Secret is not defined');
+    }
+
     userRouter.get('/', async (req: Request, res: Response) => {
-        const result = await userService.getAll();
-        res.send(result);
+
+        try {
+            if((req as any).user) {
+                const result = await userService.getAll();
+                res.send(result);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
+        } catch (error) {
+            res.send('Une erreur s\'est produite');
+        }
     });
 
     userRouter.get('/groups', async (req: Request, res: Response) => {
         try {
-            const result = await userService.getAllByGroups();
-        res.send(result);
+            if((req as any).user) {
+                const result = await userService.getAllByGroups();
+                res.send(result);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
         } catch (error) {
             console.log(error); 
         }   
@@ -25,8 +44,12 @@ export const UserController = (app: Application) => {
         const id = parseInt(req.params.id, 10);
 
         try {
-            const result = await userService.getById(id);
-            res.send(result);
+            if((req as any).user) {
+                const result = await userService.getById(id);
+                res.send(result);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
         } catch (error) {
             res.status(404).send('L\'id n\'a pas été trouvé' + id);
         }
@@ -34,8 +57,17 @@ export const UserController = (app: Application) => {
 
     userRouter.get('/username/:username', async (req: Request, res: Response) => {
         const username = req.params.username;
-        const result = await userService.getByUsername(username);
-        res.send(result);
+
+        try {
+            if((req as any).user) {
+                const result = await userService.getByUsername(username);
+                res.send(result);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
+        } catch (error) {
+            res.send(error);
+        }
     });
 
 
@@ -43,8 +75,12 @@ export const UserController = (app: Application) => {
         const status = req.params.status;
 
         try {
-            const result = await userService.getByStatus(status);
-            res.send(result);
+            if((req as any).user) {
+                const result = await userService.getByStatus(status);
+                res.send(result);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
         } catch (error) {
             res.status(404).send('Le status n\'a pas été trouvé' + status);
         }
@@ -54,8 +90,12 @@ export const UserController = (app: Application) => {
         const username = req.params.username;
 
         try {
-            const result = await userService.getByUsername(username);
-            res.send(result);
+            if((req as any).user) {
+                const result = await userService.getByUsername(username);
+                res.send(result);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
         } catch (error) {
             res.status(404).send( username + 'n\'a pas été trouvé');
         }
@@ -63,35 +103,66 @@ export const UserController = (app: Application) => {
 
     userRouter.post('/', (req: Request, res: Response) => {
         const user = req.body;
-        userService.upload(user);
-        res.send(user);
+
+        try {
+            if((req as any).user) {
+                userService.upload(user);
+                res.send(user);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
+        } catch (error) {
+            res.send(error);
+        }
     });
 
     userRouter.put('/:id', (req: Request, res: Response) => {
         const id = parseInt(req.params.id, 10);
         const user = req.body;
-        userService.modifyUser(user, id);
-        res.send(user);
+
+        try {
+            if((req as any).user) {
+                userService.modifyUser(user, id);
+                res.send(user);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
+        } catch (error) {
+            res.send(error);
+        }
     });
 
     userRouter.put('/picture/:id', (req: Request, res: Response) => {
         const id = parseInt(req.params.id, 10);
-        const user = req.body;        
-        userService.modifyUserPicture(user, id);
-        res.send(user);
+        const user = req.body;      
+        
+        try {
+            if((req as any).user) {
+                userService.modifyUserPicture(user, id);
+                res.send(user);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
+        } catch (error) {
+            res.send(error);
+        }
     });
 
     userRouter.delete('/:id', (req: Request, res: Response) => {
         const id = parseInt(req.params.id, 10);
-        userService.deleteUser(id);
-        res.send();
+
+        try {
+            if((req as any).user) {
+                userService.deleteUser(id);
+                res.send();
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
+        } catch (error) {
+            res.send(error);
+        }
     });
 
-    if (!process.env.WILD_JWT_SECRET) {
-        throw new Error('Secret is not defined');
-      }
-
-    userRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET }));
 
     userRouter.get('/user/me', async (req: Request, res: Response) => {
         const user = await userService.getById((req as any).user.id);

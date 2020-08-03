@@ -1,23 +1,43 @@
 import { CommentService } from './../services/comment.service';
 import express, { Router, Request, Response, Application } from 'express';
+import jwt = require('express-jwt');
 
 export const CommentController = (app: Application) => {
 
     const commentRouter: Router = express.Router();
     const commentService = new CommentService();
 
-    
+    if(process.env.WILD_JWT_SECRET) {
+        commentRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET}));
+    } else {
+        throw new Error('Secret is not defined');
+    }
+
+
     commentRouter.get('/', async (req: Request, res: Response) => {
-        const result = await commentService.getAll();
-        res.send(result);
+
+        try {
+            if((req as any).user) {
+                const result = await commentService.getAll();
+                res.send(result);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
+        } catch (error) {
+            res.send('Une erreur s\'est produite');
+        }
     });
 
     commentRouter.get('/:id', async (req: Request, res: Response) => {
         const id = parseInt(req.params.id, 10);
 
         try {
-            const result = (await commentService.getById(id));
-            res.send(result);
+            if((req as any).user) {
+                const result = await commentService.getById(id);
+                res.send(result);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
         } catch (error) {
             res.status(404).send('L\'id n\'a pas été trouvé' + id);
         }
@@ -27,11 +47,13 @@ export const CommentController = (app: Application) => {
         const group = req.params.group;
 
         try {
-            const result = await commentService.getByGroup(group);
-            res.send(result);
+            if((req as any).user) {
+                const result = await commentService.getByGroup(group);
+                res.send(result);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
         } catch (error) {
-            console.log(error);
-            
             res.status(404).send('Le groupe' + group + 'n\'a pas été trouvé');
         }
     });
@@ -40,8 +62,12 @@ export const CommentController = (app: Application) => {
         const group = req.params.group;
 
         try {
-            const result = await commentService.getResponseByGroup(group);
-            res.send(result);
+            if((req as any).user) {
+                const result = await commentService.getResponseByGroup(group);
+                res.send(result);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
         } catch (error) {
             res.status(404).send('Le groupe' + group + 'n\'a pas été trouvé');
         }
@@ -51,12 +77,14 @@ export const CommentController = (app: Application) => {
         const messageId = parseInt(req.params.messageId, 10);
 
         try {
-            const result = await commentService.getResponseByCommentID(messageId);
-            res.send(result);
+            if((req as any).user) {
+                const result = await commentService.getResponseByCommentID(messageId);
+                res.send(result);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
         } catch (error) {
-            console.log(error);
-            
-            res.sendStatus(404).send('erreur nb response');
+            res.send(error);
         }
     });
 
@@ -64,36 +92,61 @@ export const CommentController = (app: Application) => {
         const messageId = parseInt(req.params.messageId, 10);
 
         try {
-            const result = await commentService.getNumberResponse(messageId);
-            res.send(result);
+            if((req as any).user) {
+                const result = await commentService.getNumberResponse(messageId);
+                res.send(result);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
         } catch (error) {
-            console.log(error);
-            
-            res.sendStatus(404).send('erreur nb response');
+            res.send(error);
         }
     });
 
     commentRouter.post('/', (req: Request, res: Response) => {
         const comment = req.body;
         try {
-            commentService.upload(comment);
-            res.send(comment);
+            if((req as any).user) {
+                commentService.upload(comment);
+                res.send(comment);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
         } catch (error) {
-            console.log(error);
+            res.send(error);
         }
     });
 
     commentRouter.put('/:id', (req: Request, res: Response) => {
         const id = parseInt(req.params.id, 10);
         const comment = req.body;
-        commentService.modifycomment(comment, id);
-        res.send(comment);
+
+        try {
+            if((req as any).user) {
+                commentService.modifycomment(comment, id);
+                res.send(comment);
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
+        } catch (error) {
+            res.send(error);
+        }
     });
 
     commentRouter.delete('/:id', (req: Request, res: Response) => {
         const id = parseInt(req.params.id, 10);
-        commentService.deletecomment(id);
-        res.send();
+
+        try {
+            if((req as any).user) {
+                commentService.deletecomment(id);
+                res.send('deleted');
+            } else {
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+            }
+        } catch (error) {
+            res.send(error);
+        }
+
     });
 
     app.use('/comments', commentRouter);
