@@ -69,7 +69,7 @@ export class AuthService {
       throw new Error('Pas de secret SETUP');
     }
     const token = sign(
-      { id: user.id, username: user.username, email: user.email },
+      { id: user.id, username: user.username, email: user.email, status: user.status },
       secret1);
       
     return { token, user };

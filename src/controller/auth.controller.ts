@@ -9,40 +9,38 @@ export const AuthController = (app: Application) => {
     const authService = new AuthService();
     const authRouter: Router = express.Router();
 
-    if(process.env.WILD_JWT_SECRET) {
-        authRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET}));
-    } else {
-        throw new Error('Secret is not defined');
-    }
-
 
     authRouter.post('/signin', async (req: Request, res: Response) => {
         const userB = req.body;
 
         try {
-            if ((req as any).user.status === 'admin' || (req as any).user.status === 'superAdmin') {
-                const { token, user } = await authService.signIn(userB.username, userB.pwd);
-                res.set('access-control-expose-headers', 'JWT-TOKEN');
-                res.set('JWT-TOKEN', token);
-                user.pwd = 'null';
-                res.send(user);
-            } else {
-              res.send('Vous n\'êtes pas authorisé à faire cette requête.');
-            }
-          } catch (error) {
+            const { token, user } = await authService.signIn(userB.username, userB.pwd);
+            res.set('access-control-expose-headers', 'JWT-TOKEN');
+            res.set('JWT-TOKEN', token);
+            user.pwd = 'null';
+            res.send(user);
+        } catch (error) {
             console.log(error);
             res.status(400).send('L\'email ou le mot de passe est erroné');
-          }
+        }
     });
 
+    if (process.env.WILD_JWT_SECRET) {
+        authRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET }));
+    } else {
+        throw new Error('Secret is not defined');
+    }
+
+
     authRouter.post('/signup', async (req: Request, res: Response) => {
-        const user = req.body;
+        const userTosign = req.body;
+        
         try {
             if ((req as any).user.status === 'admin' || (req as any).user.status === 'superAdmin') {
-                await authService.signUp(user);
+                await authService.signUp(userTosign);
                 res.send('Record Ok');
             } else {
-              res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+                res.send('Vous n\'êtes pas authorisé à faire cette requête.');
             }
         } catch (error) {
             res.status(409).send('Impossible d\'enregistrer cet utilisateur');
