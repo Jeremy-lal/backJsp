@@ -139,7 +139,7 @@ export const CommentController = (app: Application) => {
         try {
             if((req as any).user) {
                 commentService.deletecomment(id);
-                res.send('deleted');
+                res.status(201);
             } else {
                 res.send('Vous n\'êtes pas authorisé à faire cette requête.');
             }
