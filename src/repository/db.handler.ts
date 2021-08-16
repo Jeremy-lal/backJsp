@@ -33,7 +33,7 @@ export class DbHandler {
                 if ( err ) {
                     return reject( err );
                 }
-                resolve();
+                resolve(1);
             } );
         } );
     }
