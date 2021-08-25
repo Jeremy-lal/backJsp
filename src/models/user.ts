@@ -1,26 +1,12 @@
 import { Note } from './note';
 export class User {
-
-     public id!: number;
-     public firstname!: string;
-     public lastname!: string;
-     public birthday!: Date;
-
+    public id!: number;
+    public firstname!: string;
+    public lastname!: string;
     public username!: string;
     public pwd!: string;
-
-    public tel!: string;
-    public email!: string;
     public status!: string;
-
-    public adress!: {
-        street: string;
-        postcode: number;
-        city: string;
-    };
-
     public note: Note[] = [];
-
     public imgURL!: string;
 
     constructor(input: User) {

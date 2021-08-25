@@ -20,7 +20,6 @@ export class AuthService {
     this.repositoryNote = new NoteRepository();
     this.tokenService = new TokenService();
     this.userService = new UserService();
-
   }
 
   async signUp(user: User) {
@@ -69,7 +68,7 @@ export class AuthService {
       throw new Error('Pas de secret SETUP');
     }
     const token = sign(
-      { id: user.id, username: user.username, email: user.email, status: user.status },
+      { id: user.id, username: user.username, status: user.status },
       secret1);
       
     return { token, user };
