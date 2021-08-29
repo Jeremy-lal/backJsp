@@ -1,3 +1,4 @@
+import { environment } from '../environment';
 import { UserService } from './../services/user.service';
 import express, { Router, Request, Response, Application } from 'express';
 import jwt = require('express-jwt')
@@ -7,8 +8,8 @@ export const UserController = (app: Application) => {
     const userRouter: Router = express.Router();
     const userService = new UserService();
 
-    if(process.env.WILD_JWT_SECRET) {
-        userRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET}));
+    if (environment.JWT_SECRET) {
+        userRouter.use(jwt({ secret: environment.JWT_SECRET }));
     } else {
         throw new Error('Secret is not defined');
     }
@@ -166,6 +167,10 @@ export const UserController = (app: Application) => {
 
     userRouter.get('/user/me', async (req: Request, res: Response) => {
         const user = await userService.getById((req as any).user.id);
+        console.log((req as any).user);
+        
+        // console.log(user);
+        
         
         if (!user) {
             res.status(400).send('Aucun utilisateur trouvé pour ce token');
@@ -173,5 +178,5 @@ export const UserController = (app: Application) => {
         res.send(user);
     });
 
-    app.use('/users', userRouter);
+    app.use(environment.baseUrl +  '/users', userRouter);
 };

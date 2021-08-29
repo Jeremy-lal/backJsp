@@ -1,3 +1,4 @@
+import { environment } from '../environment';
 import { NoteService } from './../services/note.service';
 import express, { Router, Request, Response, Application } from 'express';
 import jwt = require('express-jwt');
@@ -8,8 +9,8 @@ export const NoteController = (app: Application) => {
     const noteRouter: Router = express.Router();
     const noteService = new NoteService();
 
-    if(process.env.WILD_JWT_SECRET) {
-        noteRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET}));
+    if (environment.JWT_SECRET) {
+        noteRouter.use(jwt({ secret: environment.JWT_SECRET }));
     } else {
         throw new Error('Secret is not defined');
     }
@@ -89,5 +90,5 @@ export const NoteController = (app: Application) => {
         }
     });
 
-    app.use('/notes', noteRouter);
+    app.use(environment.baseUrl + '/notes', noteRouter);
 };

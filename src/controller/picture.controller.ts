@@ -1,3 +1,4 @@
+import { environment } from './../environment';
 import express, { Router, Request, Response, Application, NextFunction } from 'express';
 import multer from 'multer';
 const fs = require('fs');
@@ -16,6 +17,10 @@ const upload = multer({ storage: storage });
 export const PictureController = (app: Application) => {
 
   const pictureRouter: Router = express.Router();
+
+  pictureRouter.get('/', (req, res) => {
+    res.send('Hello picture');
+  });
 
   pictureRouter.post('/', upload.single('picture'), (req: Request, res: Response, next: NextFunction) => {
     const file = req.file;
@@ -41,5 +46,5 @@ export const PictureController = (app: Application) => {
     }
   });
 
-  app.use('/picture', pictureRouter);
+  app.use(environment.baseUrl + '/picture', pictureRouter);
 };

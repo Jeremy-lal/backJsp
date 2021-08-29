@@ -1,3 +1,4 @@
+import { environment } from '../environment';
 import express, { Router, Request, Response, Application, NextFunction } from 'express';
 import { FileService } from '../services/file.service';
 import jwt = require('express-jwt');
@@ -45,8 +46,8 @@ export const FilesController = (app: Application) => {
   });
 
 
-  if (process.env.WILD_JWT_SECRET) {
-    fileRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET }));
+  if (environment.JWT_SECRET) {
+    fileRouter.use(jwt({ secret: environment.JWT_SECRET }));
   } else {
     throw new Error('Secret is not defined');
   }
@@ -97,5 +98,5 @@ export const FilesController = (app: Application) => {
 });
 
 
-  app.use('/files', fileRouter);
+  app.use(environment.baseUrl + '/files', fileRouter);
 };

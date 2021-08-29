@@ -1,12 +1,13 @@
+import { environment } from '../environment';
 import { UserService } from './user.service';
 import { UserRepository } from './../repository/user.repository';
 import { NoteRepository } from './../repository/note.repository';
 import { TokenService } from './token.service';
 import { User } from 'src/models/user';
 import { Token } from '../models/token';
-import { hash, verify } from 'argon2';
 import { sign } from 'jsonwebtoken';
 import { randomBytes } from 'crypto';
+import bcrypt from 'bcrypt';
 
 export class AuthService {
 
@@ -26,7 +27,7 @@ export class AuthService {
     const username = await this.repository.findByUsername(user.username);
 
     if (username == null || undefined) {
-      user.pwd = await hash(user.pwd);
+      user.pwd = await bcrypt.hashSync(user.pwd, 10);
 
       randomBytes(12).toString('hex');
 
@@ -58,12 +59,12 @@ export class AuthService {
     if (!user) {
       throw labelError;
     }
-    const isValid = await verify(user.pwd, password);
+    const isValid = await bcrypt.compareSync(password,user.pwd);
     if (!isValid) {
       throw labelError;
     }
 
-    const secret1 = process.env.WILD_JWT_SECRET;
+    const secret1 = environment.JWT_SECRET;
     if (!secret1) {
       throw new Error('Pas de secret SETUP');
     }
@@ -80,9 +81,9 @@ export class AuthService {
       return 'Mot de passe actuel et nouveau identique';
     }
     if (user) {
-      const isValid = await verify(user.pwd, pwd); ///verify if pwd enter is the same in the bdd
+      const isValid = await bcrypt.compareSync(pwd,user.pwd); ///verify if pwd enter is the same in the bdd
       if (isValid) {
-        user.pwd = await hash(newPwd);
+        user.pwd = await bcrypt.hashSync(newPwd, 10);
         this.repository.changePwd(user, user.id);
         return 'Mot de passe bien changé.';
       } else {

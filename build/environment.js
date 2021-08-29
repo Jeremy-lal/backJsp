@@ -1,4 +1,6 @@
-export const environment = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.environment = {
     JWT_SECRET: 'h2p3D4Gq5BmRz7mtY44A',
     connexion: {
         host: 'localhost',
@@ -9,4 +11,4 @@ export const environment = {
     },
     baseUrl: '',
     logFile: '/home/jeremy/Documents/JSP/JSP_back/api.access.log'
-}
+};

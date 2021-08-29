@@ -14,8 +14,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/express-jwt": "0.0.42",
     "@types/multer": "^1.4.2",
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-jwt": "^5.3.1",
@@ -30,7 +32,6 @@
     "@types/mysql": "^2.15.8",
     "@types/node": "^12.12.22",
     "@types/nodemailer": "^6.4.0",
-    "argon2": "^0.25.1",
     "jsonwebtoken": "^8.5.1",
     "nodemailer": "^6.4.2",
     "nodemon": "^2.0.2",

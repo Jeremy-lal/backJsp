@@ -1,3 +1,4 @@
+import { environment } from '../environment';
 import { CommentService } from './../services/comment.service';
 import express, { Router, Request, Response, Application } from 'express';
 import jwt = require('express-jwt');
@@ -7,8 +8,8 @@ export const CommentController = (app: Application) => {
     const commentRouter: Router = express.Router();
     const commentService = new CommentService();
 
-    if(process.env.WILD_JWT_SECRET) {
-        commentRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET}));
+    if (environment.JWT_SECRET) {
+        commentRouter.use(jwt({ secret: environment.JWT_SECRET }));
     } else {
         throw new Error('Secret is not defined');
     }
@@ -149,5 +150,5 @@ export const CommentController = (app: Application) => {
 
     });
 
-    app.use('/comments', commentRouter);
+    app.use(environment.baseUrl + '/comments', commentRouter);
 };

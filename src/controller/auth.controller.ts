@@ -2,12 +2,17 @@ import { User } from 'src/models/user';
 import express, { Router, Request, Response, Application } from 'express';
 import { AuthService } from '../services/auth.service';
 import jwt = require('express-jwt');
+import { environment } from '../environment';
 
 
 export const AuthController = (app: Application) => {
 
     const authService = new AuthService();
     const authRouter: Router = express.Router();
+
+    authRouter.get('/', (req, res) => {
+        res.send('Hello auth');
+      });
 
 
     authRouter.post('/signin', async (req: Request, res: Response) => {
@@ -25,8 +30,9 @@ export const AuthController = (app: Application) => {
         }
     });
 
-    if (process.env.WILD_JWT_SECRET) {
-        authRouter.use(jwt({ secret: process.env.WILD_JWT_SECRET }));
+
+    if (environment.JWT_SECRET) {
+        authRouter.use(jwt({ secret: environment.JWT_SECRET }));
     } else {
         throw new Error('Secret is not defined');
     }
@@ -59,5 +65,5 @@ export const AuthController = (app: Application) => {
         }
     });
 
-    app.use('/auth', authRouter);
+    app.use(environment.baseUrl + '/auth', authRouter);
 };
