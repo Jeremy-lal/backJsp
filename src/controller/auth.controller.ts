@@ -54,11 +54,21 @@ export const AuthController = (app: Application) => {
     });
 
     authRouter.put('/pwd', async (req: Request, res: Response) => {
-        const user = req.body.user;
-        const pwd = req.body.pwd;
-        const newPwd = req.body.newPwd;
+        const {user, pwd, newPwd } = req.body;
+
         try {
             const result = await authService.changePwd(user, pwd, newPwd);
+            res.send(JSON.stringify(result));
+        } catch (error) {
+            res.status(409).send('pb');
+        }
+    });
+
+    authRouter.put('/pwd/refresh', async (req: Request, res: Response) => {
+        const {user, newPwd} = req.body;
+
+        try {
+            const result = await authService.refreshPwd(user, newPwd);
             res.send(JSON.stringify(result));
         } catch (error) {
             res.status(409).send('pb');

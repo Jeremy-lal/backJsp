@@ -59,7 +59,7 @@ export class AuthService {
     if (!user) {
       throw labelError;
     }
-    const isValid = await bcrypt.compareSync(password,user.pwd);
+    const isValid = await bcrypt.compareSync(password, user.pwd);
     if (!isValid) {
       throw labelError;
     }
@@ -71,7 +71,7 @@ export class AuthService {
     const token = sign(
       { id: user.id, username: user.username, status: user.status },
       secret1);
-      
+
     return { token, user };
   }
 
@@ -81,7 +81,7 @@ export class AuthService {
       return 'Mot de passe actuel et nouveau identique';
     }
     if (user) {
-      const isValid = await bcrypt.compareSync(pwd,user.pwd); ///verify if pwd enter is the same in the bdd
+      const isValid = await bcrypt.compareSync(pwd, user.pwd); ///verify if pwd enter is the same in the bdd
       if (isValid) {
         user.pwd = await bcrypt.hashSync(newPwd, 10);
         this.repository.changePwd(user, user.id);
@@ -91,6 +91,18 @@ export class AuthService {
       }
     } else {
       return 'Utilisateur non valide.';
+    }
+  }
+
+  async refreshPwd(userPass: User, newPwd: string) {
+    const user = await this.repository.findByUsername(userPass.username);
+
+    if (user) {
+      user.pwd = await bcrypt.hashSync(newPwd, 10);
+      this.repository.changePwd(user, user.id);
+      return 'Mot de passe bien changé.';
+    } else {
+      return 'Mot de passe actuel erroné.';
     }
   }
 }

@@ -1,3 +1,4 @@
+import { GalleryController } from './controller/gallery.controller';
 
 // (firstname, lastname, birthday, tel, email, adress, imgURL, status)
 // ('Inconu2', 'Inconnu2', '1992-01-27','06-20-46-04-48', 'inconnu2@gmail.com', '11 rue des jardin 33700 Mérignac', 'https://i.skyrock.net/2905/86002905/pics/3164012828_1_2_SlQQps0s.gif', 'jsp1'),
@@ -39,6 +40,7 @@ async function startServer() {
   AuthController(app);
   PictureController(app)
   FilesController(app)
+  GalleryController(app)
 
   app.get('/api/jsp/', (req, res) => {
     res.send('Hello world');
