@@ -67,6 +67,23 @@ export const FilesController = (app: Application) => {
     }
   });
 
+  fileRouter.get('/by/user', async (req: Request, res: Response, next: NextFunction) => {
+
+    try {
+      const user = (req as any).user;
+
+      if (user) {
+        const isAdmin = ['admin', 'superAdmin'].includes(user.status);
+        const result = isAdmin ? await fileService.getAll() : await fileService.getUserFile(user.status)
+        res.send(result);
+      } else {
+        res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+      }
+    } catch (error) {
+      res.send(error);
+    }
+  });
+
   fileRouter.post('/file', async (req: Request, res: Response, next: NextFunction) => {
     const file = req.body;
 
@@ -86,16 +103,16 @@ export const FilesController = (app: Application) => {
     const id = parseInt(req.params.id, 10);
 
     try {
-        if((req as any).user) {
-            fileService.deletefile(id);
-            res.send();
-        } else {
-            res.send('Vous n\'êtes pas authorisé à faire cette requête.');
-        }
+      if ((req as any).user) {
+        fileService.deletefile(id);
+        res.send();
+      } else {
+        res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+      }
     } catch (error) {
-        res.status(404).send('L\'id n\'a pas été trouvé' + id);
+      res.status(404).send('L\'id n\'a pas été trouvé' + id);
     }
-});
+  });
 
 
   app.use(environment.baseUrl + '/files', fileRouter);

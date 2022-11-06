@@ -44,6 +44,7 @@ jspm_packages/
 # file and images
 images/
 files/
+gallery/
 
 # TypeScript v1 declaration files
 typings/

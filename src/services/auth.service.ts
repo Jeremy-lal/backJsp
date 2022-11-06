@@ -46,6 +46,8 @@ export class AuthService {
   async signIn(username: string, password: string) {
     const labelError = new Error('Invalide crendentials');
     const user = await this.repository.findByUsername(username);
+    console.log(user);
+
     try {
       user.note = (await this.repositoryNote.findByUserId(user.id));
     } catch (error) {

@@ -5,10 +5,10 @@ exports.environment = {
     connexion: {
         host: 'localhost',
         user: 'root',
-        pwd: 'CLStt2Q9Dw1X3JxERWbJ',
+        // pwd: 'CLStt2Q9Dw1X3JxERWbJ',
         database: 'jsp',
         port: 5432
     },
     baseUrl: '',
-    logFile: '/home/jeremy/Documents/JSP/JSP_back/api.access.log'
+    logFile: '/home/jeremy/Documents/Jsp/backJsp/api.access.log'
 };

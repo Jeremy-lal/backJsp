@@ -4,6 +4,7 @@ import { File } from '../models/file';
 export class FileRepository {
 
     private GET_ALL = 'SELECT * FROM file;';
+    private GET_BY_GROUP = 'SELECT * FROM file WHERE grp = "Commun" OR  grp = ?;';
     private GET_BY_ID = 'SELECT * FROM file WHERE user_id = ?';
     private POST_BY_ID = 'INSERT INTO file SET ?';
     private DEL_BY_ID = 'DELETE FROM file WHERE id = ?';
@@ -11,7 +12,12 @@ export class FileRepository {
     private db: DbHandler;
 
     constructor() {
-        this.db =  DbHandler.getInstance();
+        this.db = DbHandler.getInstance();
+    }
+
+    async findByGrp(grp: string) {
+        const file = await this.db.query(this.GET_BY_GROUP, grp) as Promise<never>;
+        return file;
     }
 
     async findAll() {
@@ -20,7 +26,7 @@ export class FileRepository {
     }
 
     async findById(id: number) {
-        const file = await this.db.query(this.GET_BY_ID , id) as Promise<never>;
+        const file = await this.db.query(this.GET_BY_ID, id) as Promise<never>;
         return file;
     }
 
@@ -30,7 +36,7 @@ export class FileRepository {
     }
 
     async delete(id: number) {
-        const deletefile = await this.db.query(this.DEL_BY_ID , id);
+        const deletefile = await this.db.query(this.DEL_BY_ID, id);
         return deletefile;
     }
 }

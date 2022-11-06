@@ -39,62 +39,86 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var gallery_service_1 = require("./../services/gallery.service");
+var environment_1 = require("./../environment");
 var express_1 = __importDefault(require("express"));
-var auth_service_1 = require("../services/auth.service");
+var multer_1 = __importDefault(require("multer"));
+var fs = require('fs');
+var path = require('path');
 var jwt = require("express-jwt");
-var environment_1 = require("../environment");
-exports.AuthController = function (app) {
-    var authService = new auth_service_1.AuthService();
-    var authRouter = express_1.default.Router();
-    authRouter.get('/', function (req, res) {
-        res.send('Hello auth');
-    });
-    authRouter.post('/signin', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var userB, _a, token, user, error_1;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+var storage = multer_1.default.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'gallery/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    },
+});
+var upload = multer_1.default({ storage: storage });
+exports.GalleryController = function (app) {
+    var galleryRouter = express_1.default.Router();
+    var galleryService = new gallery_service_1.GalleryService();
+    galleryRouter.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var result, error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
-                    userB = req.body;
-                    _b.label = 1;
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, galleryService.getAll()];
                 case 1:
-                    _b.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, authService.signIn(userB.username, userB.pwd)];
+                    result = _a.sent();
+                    res.send(result);
+                    return [3 /*break*/, 3];
                 case 2:
-                    _a = _b.sent(), token = _a.token, user = _a.user;
-                    res.set('access-control-expose-headers', 'JWT-TOKEN');
-                    res.set('JWT-TOKEN', token);
-                    user.pwd = 'null';
-                    res.send(user);
-                    return [3 /*break*/, 4];
-                case 3:
-                    error_1 = _b.sent();
-                    console.log(error_1);
-                    res.status(400).send('L\'email ou le mot de passe est erroné');
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    error_1 = _a.sent();
+                    res.send('Une erreur s\'est produite');
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
             }
         });
     }); });
+    galleryRouter.get('/:nameFile', upload.single('picture'), function (req, res, next) {
+        var name = req.params.nameFile;
+        try {
+            res.sendFile(path.resolve("gallery/" + name));
+        }
+        catch (error) {
+            res.send(error);
+        }
+    });
+    galleryRouter.post('/img', upload.single('picture'), function (req, res, next) {
+        var file = req.file;
+        try {
+            if (!file) {
+                var error = new Error('PLease upload a file');
+                return next(error);
+            }
+            res.send(file);
+        }
+        catch (error) {
+            res.send(error);
+        }
+    });
     if (environment_1.environment.JWT_SECRET) {
-        authRouter.use(jwt({ secret: environment_1.environment.JWT_SECRET }));
+        galleryRouter.use(jwt({ secret: environment_1.environment.JWT_SECRET }));
     }
     else {
         throw new Error('Secret is not defined');
     }
-    authRouter.post('/signup', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var userTosign, error_2;
+    galleryRouter.post('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var img, result, error_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    userTosign = req.body;
+                    img = req.body;
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 5, , 6]);
                     if (!(req.user.status === 'admin' || req.user.status === 'superAdmin')) return [3 /*break*/, 3];
-                    return [4 /*yield*/, authService.signUp(userTosign)];
+                    return [4 /*yield*/, galleryService.upload(img)];
                 case 2:
-                    _a.sent();
-                    res.send('Record Ok');
+                    result = _a.sent();
+                    res.send(result);
                     return [3 /*break*/, 4];
                 case 3:
                     res.send('Vous n\'êtes pas authorisé à faire cette requête.');
@@ -102,55 +126,42 @@ exports.AuthController = function (app) {
                 case 4: return [3 /*break*/, 6];
                 case 5:
                     error_2 = _a.sent();
-                    res.status(409).send('Impossible d\'enregistrer cet utilisateur');
+                    res.status(404).send('Erreur lors de la requête');
                     return [3 /*break*/, 6];
                 case 6: return [2 /*return*/];
             }
         });
     }); });
-    authRouter.put('/pwd', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, user, pwd, newPwd, result, error_3;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+    galleryRouter.post('/delete', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+        var id, name, result, error_3;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
-                    _a = req.body, user = _a.user, pwd = _a.pwd, newPwd = _a.newPwd;
-                    _b.label = 1;
+                    id = parseInt(req.body.id, 10);
+                    name = req.body.name;
+                    _a.label = 1;
                 case 1:
-                    _b.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, authService.changePwd(user, pwd, newPwd)];
+                    _a.trys.push([1, 5, , 6]);
+                    if (!(req.user.status === 'admin' || req.user.status === 'superAdmin')) return [3 /*break*/, 3];
+                    return [4 /*yield*/, galleryService.delete(id)];
                 case 2:
-                    result = _b.sent();
-                    res.send(JSON.stringify(result));
+                    result = _a.sent();
+                    if (result) {
+                        fs.unlinkSync('gallery/' + name);
+                    }
+                    res.send(result);
                     return [3 /*break*/, 4];
                 case 3:
-                    error_3 = _b.sent();
-                    res.status(409).send('pb');
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    res.send('Vous n\'êtes pas authorisé à faire cette requête.');
+                    _a.label = 4;
+                case 4: return [3 /*break*/, 6];
+                case 5:
+                    error_3 = _a.sent();
+                    res.status(404).send('Erreur lors de la requête');
+                    return [3 /*break*/, 6];
+                case 6: return [2 /*return*/];
             }
         });
     }); });
-    authRouter.put('/pwd/refresh', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, user, newPwd, result, error_4;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    _a = req.body, user = _a.user, newPwd = _a.newPwd;
-                    _b.label = 1;
-                case 1:
-                    _b.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, authService.refreshPwd(user, newPwd)];
-                case 2:
-                    result = _b.sent();
-                    res.send(JSON.stringify(result));
-                    return [3 /*break*/, 4];
-                case 3:
-                    error_4 = _b.sent();
-                    res.status(409).send('pb');
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
-            }
-        });
-    }); });
-    app.use(environment_1.environment.baseUrl + '/auth', authRouter);
+    app.use(environment_1.environment.baseUrl + '/gallery', galleryRouter);
 };

@@ -14,6 +14,11 @@ export class FileService {
         return all;
     }
 
+    async getUserFile(grp: string) {
+        const files = await this.repository.findByGrp(grp);
+        return files;
+    }
+
     async findById(id: number) {
         if (!Number.isInteger(id)) {
             throw new Error('error');

@@ -159,6 +159,26 @@ var AuthService = /** @class */ (function () {
             });
         });
     };
+    AuthService.prototype.refreshPwd = function (userPass, newPwd) {
+        return __awaiter(this, void 0, void 0, function () {
+            var user, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.repository.findByUsername(userPass.username)];
+                    case 1:
+                        user = _b.sent();
+                        if (!user) return [3 /*break*/, 3];
+                        _a = user;
+                        return [4 /*yield*/, bcrypt_1.default.hashSync(newPwd, 10)];
+                    case 2:
+                        _a.pwd = _b.sent();
+                        this.repository.changePwd(user, user.id);
+                        return [2 /*return*/, 'Mot de passe bien changé.'];
+                    case 3: return [2 /*return*/, 'Mot de passe actuel erroné.'];
+                }
+            });
+        });
+    };
     return AuthService;
 }());
 exports.AuthService = AuthService;

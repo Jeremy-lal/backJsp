@@ -35,30 +35,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var mysql_1 = __importDefault(require("mysql"));
-var environment_1 = require("../environment");
-var db_handler_1 = require("../repository/db.handler");
-exports.default = (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var connexion;
-    return __generator(this, function (_a) {
-        connexion = mysql_1.default.createConnection({
-            host: environment_1.environment.connexion.host,
-            // port: environment.connexion.port,
-            user: environment_1.environment.connexion.user,
-            // password: environment.connexion.pwd,
-            database: environment_1.environment.connexion.database,
+var gallery_repository_1 = require("./../repository/gallery.repository");
+var GalleryService = /** @class */ (function () {
+    function GalleryService() {
+        this.repository = new gallery_repository_1.GalleryRepository();
+    }
+    GalleryService.prototype.getAll = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var all;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.repository.findAll()];
+                    case 1:
+                        all = _a.sent();
+                        return [2 /*return*/, all];
+                }
+            });
         });
-        db_handler_1.DbHandler.getInstance(connexion);
-        connexion.connect(function (err) {
-            if (err) {
-                throw err;
-            }
-            console.log('Connected!');
+    };
+    GalleryService.prototype.upload = function (img) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.repository.save(img)];
+            });
         });
-        return [2 /*return*/, connexion];
-    });
-}); });
+    };
+    GalleryService.prototype.delete = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.repository.delete(id)];
+            });
+        });
+    };
+    return GalleryService;
+}());
+exports.GalleryService = GalleryService;

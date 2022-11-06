@@ -1,6 +1,4 @@
 "use strict";
-// (firstname, lastname, birthday, tel, email, adress, imgURL, status)
-// ('Inconu2', 'Inconnu2', '1992-01-27','06-20-46-04-48', 'inconnu2@gmail.com', '11 rue des jardin 33700 Mérignac', 'https://i.skyrock.net/2905/86002905/pics/3164012828_1_2_SlQQps0s.gif', 'jsp1'),
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -41,6 +39,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var gallery_controller_1 = require("./controller/gallery.controller");
+// (firstname, lastname, birthday, tel, email, adress, imgURL, status)
+// ('Inconu2', 'Inconnu2', '1992-01-27','06-20-46-04-48', 'inconnu2@gmail.com', '11 rue des jardin 33700 Mérignac', 'https://i.skyrock.net/2905/86002905/pics/3164012828_1_2_SlQQps0s.gif', 'jsp1'),
 var user_controller_1 = require("./controller/user.controller");
 var comment_controller_1 = require("./controller/comment.controller");
 var note_controller_1 = require("./controller/note.controller");
@@ -59,6 +60,8 @@ function startServer() {
                 case 0:
                     access = fs.createWriteStream(environment_1.environment.logFile);
                     process.stdout.write = process.stderr.write = access.write.bind(access);
+                    // var myConsole = new console.Console(access, access);
+                    console.log('here');
                     app = express_1.default();
                     return [4 /*yield*/, loaders_1.default(app)];
                 case 1:
@@ -75,6 +78,7 @@ function startServer() {
                     auth_controller_1.AuthController(app);
                     picture_controller_1.PictureController(app);
                     files_controller_1.FilesController(app);
+                    gallery_controller_1.GalleryController(app);
                     app.get('/api/jsp/', function (req, res) {
                         res.send('Hello world');
                     });

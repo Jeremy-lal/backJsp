@@ -9,9 +9,9 @@ export default async () => {
         host: environment.connexion.host, // address of the server
         // port: environment.connexion.port,
         user: environment.connexion.user, // username
-        password: environment.connexion.pwd,
+        // password: environment.connexion.pwd,
         database: environment.connexion.database,
-        
+
     });
 
     DbHandler.getInstance(connexion);

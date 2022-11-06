@@ -18,10 +18,12 @@ const fs = require('fs')
 
 
 async function startServer() {
+
   // // Récupération de l'application initiale
   var access = fs.createWriteStream(environment.logFile);
   process.stdout.write = process.stderr.write = access.write.bind(access);
   // var myConsole = new console.Console(access, access);
+  console.log('here');
 
   const app = express();
 
@@ -51,4 +53,4 @@ async function startServer() {
   app.listen(3000, () => console.log('Express server is running'));
 }
 
-startServer();
+startServer(); 

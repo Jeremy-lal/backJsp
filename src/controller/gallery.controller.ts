@@ -67,14 +67,15 @@ export const GalleryController = (app: Application) => {
         const img = req.body;
 
         try {
-            if((req as any).user.status === 'admin' || (req as any).user.status === 'superAdmin') {
+            if ((req as any).user.status === 'admin' || (req as any).user.status === 'superAdmin') {
                 const result = await galleryService.upload(img);
                 res.send(result);
             } else {
                 res.send('Vous n\'êtes pas authorisé à faire cette requête.');
             }
         } catch (error) {
-            res.status(404).send('Erreur lors de la requête');
+            res.status(404).send(error);
+            // res.status(404).send('Erreur lors de la requête');
         }
     });
 
@@ -83,10 +84,10 @@ export const GalleryController = (app: Application) => {
         const name = req.body.name;
 
         try {
-            if((req as any).user.status === 'admin' || (req as any).user.status === 'superAdmin') {
+            if ((req as any).user.status === 'admin' || (req as any).user.status === 'superAdmin') {
                 const result = await galleryService.delete(id);
 
-                if(result) {
+                if (result) {
                     fs.unlinkSync('gallery/' + name)
                 }
 
