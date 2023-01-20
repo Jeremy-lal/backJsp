@@ -43,11 +43,11 @@ export class CommentService {
     }
 
     async modifycomment(comment: Comment, id: number) {
-        return this.repository.modify(comment, id);
+        return await this.repository.modify(comment, id);
     }
 
     async deletecomment(id: number) {
-        return this.repository.delete(id);
+        return await this.repository.delete(id);
     }
 }
 

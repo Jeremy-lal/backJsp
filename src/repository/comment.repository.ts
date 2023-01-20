@@ -6,7 +6,14 @@ export class CommentRepository {
 
     private GET_ALL = 'SELECT * FROM comment;';
     private GET_BY_ID = 'SELECT * FROM comment where id = ?';
-    private GET_BY_GROUP = 'SELECT c.*, u.firstname, u.lastname, u.status, u.imgURL, u.status FROM comment AS c  JOIN user AS u ON c.user_id= u.id WHERE grp = ? and comment_id  IS NULL;';
+    private GET_BY_GROUP = `
+        SELECT c1.*, COUNT(c2.id) as nbAnswer, u.firstname, u.lastname, u.status, u.imgURL
+        FROM comment c1 
+        LEFT JOIN comment c2 ON c1.id = c2.comment_id
+        JOIN user u ON c1.user_id = u.id
+        WHERE c1.comment_id IS NULL 
+        AND c1.grp = ?
+        GROUP BY c1.id;`
     private GET_RESPONSE_BY_GROUP = 'SELECT c.*, u.id AS userID, u.firstname, u.lastname, u.status, u.imgURL, u.status FROM comment AS c  JOIN user AS u ON c.user_id= u.id WHERE grp = ? and comment_id IS NOT NULL;';
     private GET_COMMENT_RESPONSE = 'SELECT c.*, u.id AS userID, u.firstname, u.lastname, u.status, u.imgURL, u.status FROM comment AS c  JOIN user AS u ON c.user_id= u.id WHERE comment_id = ?;';
     private GET_NUMBER_RESPONSE = 'SELECT COUNT(*) AS count FROM comment where comment_id = ?';
@@ -17,7 +24,7 @@ export class CommentRepository {
     private db: DbHandler;
 
     constructor() {
-        this.db =  DbHandler.getInstance();
+        this.db = DbHandler.getInstance();
 
     }
 
@@ -27,11 +34,11 @@ export class CommentRepository {
     }
 
     async findById(id: number) {
-        const comment = await this.db.query(this.GET_BY_ID , id) as Promise<Comment[]>;
+        const comment = await this.db.query(this.GET_BY_ID, id) as Promise<Comment[]>;
         return comment;
     }
     async findByGroup(grp: string) {
-        const comments = await this.db.query(this.GET_BY_GROUP , grp);
+        const comments = await this.db.query(this.GET_BY_GROUP, grp);
         return comments;
     }
 
@@ -43,8 +50,7 @@ export class CommentRepository {
     }
 
     async findResponseByGroup(grp: string) {
-        
-        const comments = await this.db.query(this.GET_RESPONSE_BY_GROUP , grp);
+        const comments = await this.db.query(this.GET_RESPONSE_BY_GROUP, grp);
         return comments;
     }
 
@@ -59,10 +65,7 @@ export class CommentRepository {
     }
 
     async delete(id: number) {
-        const deleteComment = await this.db.query(this.DEL_BY_ID , id);
+        const deleteComment = await this.db.query(this.DEL_BY_ID, id);
         return deleteComment;
     }
 }
-
-// "grp": "Commun",
-// "grp": "Commun",

@@ -18,7 +18,7 @@ export const CommentController = (app: Application) => {
     commentRouter.get('/', async (req: Request, res: Response) => {
 
         try {
-            if((req as any).user) {
+            if ((req as any).user) {
                 const result = await commentService.getAll();
                 res.send(result);
             } else {
@@ -33,7 +33,7 @@ export const CommentController = (app: Application) => {
         const id = parseInt(req.params.id, 10);
 
         try {
-            if((req as any).user) {
+            if ((req as any).user) {
                 const result = await commentService.getById(id);
                 res.send(result);
             } else {
@@ -48,7 +48,7 @@ export const CommentController = (app: Application) => {
         const group = req.params.group;
 
         try {
-            if((req as any).user) {
+            if ((req as any).user) {
                 const result = await commentService.getByGroup(group);
                 res.send(result);
             } else {
@@ -63,7 +63,7 @@ export const CommentController = (app: Application) => {
         const group = req.params.group;
 
         try {
-            if((req as any).user) {
+            if ((req as any).user) {
                 const result = await commentService.getResponseByGroup(group);
                 res.send(result);
             } else {
@@ -78,7 +78,7 @@ export const CommentController = (app: Application) => {
         const messageId = parseInt(req.params.messageId, 10);
 
         try {
-            if((req as any).user) {
+            if ((req as any).user) {
                 const result = await commentService.getResponseByCommentID(messageId);
                 res.send(result);
             } else {
@@ -93,7 +93,7 @@ export const CommentController = (app: Application) => {
         const messageId = parseInt(req.params.messageId, 10);
 
         try {
-            if((req as any).user) {
+            if ((req as any).user) {
                 const result = await commentService.getNumberResponse(messageId);
                 res.send(result);
             } else {
@@ -107,7 +107,7 @@ export const CommentController = (app: Application) => {
     commentRouter.post('/', (req: Request, res: Response) => {
         const comment = req.body;
         try {
-            if((req as any).user) {
+            if ((req as any).user) {
                 commentService.upload(comment);
                 res.send(comment);
             } else {
@@ -118,14 +118,14 @@ export const CommentController = (app: Application) => {
         }
     });
 
-    commentRouter.put('/:id', (req: Request, res: Response) => {
+    commentRouter.put('/:id', async (req: Request, res: Response) => {
         const id = parseInt(req.params.id, 10);
         const comment = req.body;
 
         try {
-            if((req as any).user) {
-                commentService.modifycomment(comment, id);
-                res.send(comment);
+            if ((req as any).user) {
+                const result = await commentService.modifycomment(comment, id);
+                res.send(result);
             } else {
                 res.send('Vous n\'êtes pas authorisé à faire cette requête.');
             }
@@ -134,13 +134,13 @@ export const CommentController = (app: Application) => {
         }
     });
 
-    commentRouter.delete('/:id', (req: Request, res: Response) => {
+    commentRouter.delete('/:id', async (req: Request, res: Response) => {
         const id = parseInt(req.params.id, 10);
 
         try {
-            if((req as any).user) {
-                commentService.deletecomment(id);
-                res.status(201);
+            if ((req as any).user) {
+                const result = await commentService.deletecomment(id);;
+                res.send(result);
             } else {
                 res.send('Vous n\'êtes pas authorisé à faire cette requête.');
             }
